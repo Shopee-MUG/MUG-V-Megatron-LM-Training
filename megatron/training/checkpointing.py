@@ -731,7 +731,7 @@ def maybe_save_dataloader_state(train_iterator, iteration, dataloader_save_path)
         return
 
     # If dataloader doesn't support saving state, raise an error.
-    if not hasattr(train_iterator.iterable, "save_state"):
+    if not isinstance(train_iterator, list) and not hasattr(train_iterator.iterable, "save_state"): # In case vpp
         raise RuntimeError(f"Could not find a save_state for the train_iterator of type {type(train_iterator)}")
 
     # Save dataloader state for each data parallel rank only once.
@@ -741,7 +741,10 @@ def maybe_save_dataloader_state(train_iterator, iteration, dataloader_save_path)
 
     dp_rank = mpu.get_data_parallel_rank()
     print(f"saving dataloader checkpoint at iteration {iteration} to {dataloader_save_path}")
-    train_dataloader_state_dict = train_iterator.iterable.save_state()
+    if not isinstance(train_iterator, list):
+        train_dataloader_state_dict = train_iterator.iterable.save_state()
+    else:
+        train_dataloader_state_dict = [iterator.iterable.save_state() for iterator in train_iterator]
     data_state_save_path = get_checkpoint_name(
         dataloader_save_path, iteration,
         basename=f'train_dataloader_dprank{dp_rank:03d}.pt'
@@ -1601,7 +1604,7 @@ def load_checkpoint(ddp_model, optimizer, opt_param_scheduler, load_arg='load', 
                 load_return = module.load_state_dict(state_dict, strict=False)
                 print(f"load_return: {load_return}")
     # Model.
-    strict = False if args.retro_add_retriever else strict
+    strict = False # if args.retro_add_retriever else strict
     if not skip_load_to_model_and_opt:
         if len(ddp_model) == 1:
             load_model_state_dict(ddp_model[0], state_dict['model'], strict)
