@@ -1144,6 +1144,18 @@ def setup_model_and_optimizer(
         args.iteration = 0
         args.num_floating_point_operations_so_far = 0
 
+    if args.override_opt_param_scheduler:
+        from megatron.core.optimizer import _update_min_and_max_lr_in_param_groups
+        updated_groups = _update_min_and_max_lr_in_param_groups(
+            optimizer.param_groups,
+            lr=config.lr,
+            min_lr=config.min_lr,
+            decoupled_lr=config.decoupled_lr,
+            decoupled_min_lr=config.decoupled_min_lr,
+        )
+        for i, group in enumerate(updated_groups):
+            optimizer.param_groups[i].update(group)
+
     # get model without FP16 and/or DDP wrappers
     if (
         args.iteration == 0
