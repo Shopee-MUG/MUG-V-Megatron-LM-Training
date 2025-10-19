@@ -1,0 +1,44 @@
+# Data Preparation Requirements for MUG-V Megatron Training
+#
+# These dependencies are required ONLY for data preprocessing.
+# Training dependencies are specified in the main Dockerfile.
+#
+# Installation:
+#   uv pip install -r data_preparation/requirements.txt
+
+# Core Dependencies
+
+# PyTorch
+--extra-index-url https://download.pytorch.org/whl/cu121
+torch>=2.1.0
+torchvision>=0.16.0
+
+# Video I/O (at least one is required)
+
+# PyAV - recommended for robustness
+av>=11.0.0
+
+# Decord - alternative video reader (faster but less robust)
+# Uncomment if you prefer Decord over PyAV
+# decord>=0.6.0
+
+# Text Encoding
+
+# HuggingFace Transformers for T5-XXL
+transformers>=4.35.0
+sentencepiece>=0.1.99
+protobuf>=3.20.0
+diffusers
+
+# Accelerate for model loading
+accelerate>=0.20.0
+
+# Utilities
+
+# Progress bars
+tqdm>=4.62.0
+
+# MUGDiT Model Definitions (VideoVAE + T5Encoder)
+# Install without dependencies to avoid version conflicts
+# The package itself has no runtime dependencies beyond what's already installed above
+--no-deps git+https://github.com/Shopee-MUG/MUG-V.git@main

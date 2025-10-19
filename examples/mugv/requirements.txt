@@ -1,0 +1,16 @@
+loguru
+orjson
+av
+decord
+
+setuptools
+numpy==1.26.4
+transformers
+sentencepiece
+# transformer_engine[pytorch]
+
+# dev tools
+ipdb
+
+# logging
+wandb
