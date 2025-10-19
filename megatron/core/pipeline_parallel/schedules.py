@@ -229,7 +229,7 @@ def forward_step_calc_loss(
             cp_group_size is not None and is_last_stage is not None
         ), "cp_group_size and is_last_stage must be provided"
 
-    num_tokens = torch.tensor(0, dtype=torch.int)
+    num_tokens = torch.tensor(0, dtype=torch.int64)
     if is_last_stage:
         if not collect_non_loss_data:
             outputs = loss_func(output_tensor)
@@ -575,7 +575,7 @@ def forward_backward_no_pipelining(
 
     forward_data_store = []
     input_tensor, output_tensor_grad = None, None
-    total_num_tokens = torch.zeros([], dtype=torch.int, device="cuda")
+    total_num_tokens = torch.zeros([], dtype=torch.int64, device="cuda")
 
     if config.overlap_moe_expert_parallel_comm and not forward_only:
         forward_data_store, total_num_tokens = combined_1f1b_schedule_for_no_pipelining(
@@ -965,7 +965,7 @@ def forward_backward_pipelining_with_interleaving(
 
     input_tensors = [[] for _ in range(len(model))]
     output_tensors = [[] for _ in range(len(model))]
-    total_num_tokens = torch.zeros([], dtype=torch.int, device="cuda")
+    total_num_tokens = torch.zeros([], dtype=torch.int64, device="cuda")
 
     forward_data_store = []
     output_tensor_grads = None
@@ -2121,7 +2121,7 @@ def forward_backward_pipelining_without_interleaving(
     # Input, output tensors only need to be saved when doing backward passes
     input_tensors = None
     output_tensors = None
-    total_num_tokens = torch.zeros([], dtype=torch.int, device="cuda")
+    total_num_tokens = torch.zeros([], dtype=torch.int64, device="cuda")
 
     if not forward_only:
         input_tensors = []
